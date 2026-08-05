@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SlideAI 本地版 - PPT生成器</title>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family:'Microsoft YaHei','Segoe UI',sans-serif; background:#0A0E17; color:#E8ECF1; min-height:100vh; }
+
+.container { max-width:720px; margin:0 auto; padding:40px 20px; }
+
+.header { text-align:center; margin-bottom:48px; }
+.header h1 { font-size:32px; background:linear-gradient(135deg,#00D4FF,#7B61FF); -webkit-background-clip:text; -webkit-text-fill-color:transparent; margin-bottom:8px; }
+.header p { color:#8899AA; font-size:14px; }
+
+.card { background:#111827; border:1px solid #1E293B; border-radius:16px; padding:32px; margin-bottom:24px; }
+.card h2 { font-size:18px; margin-bottom:20px; color:#E8ECF1; }
+
+.form-group { margin-bottom:20px; }
+.form-group label { display:block; font-size:13px; color:#8899AA; margin-bottom:8px; font-weight:500; }
+.form-group input, .form-group select {
+  width:100%; padding:12px 16px; background:#0A0E17; border:1px solid #1E293B;
+  border-radius:10px; color:#E8ECF1; font-size:15px; outline:none; transition:border .2s;
+}
+.form-group input:focus, .form-group select:focus { border-color:#00D4FF; }
+.form-group select { cursor:pointer; }
+.form-group select option { background:#111827; color:#E8ECF1; }
+
+.style-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:10px; }
+.style-btn {
+  padding:12px; background:#0A0E17; border:2px solid #1E293B; border-radius:10px;
+  color:#8899AA; cursor:pointer; text-align:center; transition:all .2s; font-size:13px;
+}
+.style-btn:hover { border-color:#334155; color:#E8ECF1; }
+.style-btn.active { border-color:#00D4FF; color:#00D4FF; background:rgba(0,212,255,.08); }
+.style-btn .name { font-size:14px; font-weight:600; margin-bottom:2px; }
+.style-btn .desc { font-size:11px; opacity:.7; }
+
+.generate-btn {
+  width:100%; padding:16px; background:linear-gradient(135deg,#00D4FF,#7B61FF);
+  border:none; border-radius:12px; color:#fff; font-size:16px; font-weight:600;
+  cursor:pointer; transition:opacity .2s; margin-top:8px;
+}
+.generate-btn:hover { opacity:.9; }
+.generate-btn:disabled { opacity:.4; cursor:not-allowed; }
+
+.progress-area { display:none; margin-top:24px; }
+.progress-area.show { display:block; }
+.progress-bar-bg { height:6px; background:#1E293B; border-radius:3px; overflow:hidden; margin-bottom:12px; }
+.progress-bar { height:100%; background:linear-gradient(90deg,#00D4FF,#7B61FF); border-radius:3px; transition:width .3s; width:0%; }
+.progress-text { font-size:13px; color:#8899AA; margin-bottom:16px; }
+
+.logs { background:#0A0E17; border:1px solid #1E293B; border-radius:10px; padding:16px; max-height:200px; overflow-y:auto; font-family:Consolas,monospace; font-size:12px; line-height:1.8; color:#64748B; }
+.logs .log-item { padding:2px 0; }
+
+.download-btn {
+  display:none; width:100%; padding:16px; background:#10B981; border:none;
+  border-radius:12px; color:#fff; font-size:16px; font-weight:600; cursor:pointer; margin-top:16px; transition:opacity .2s;
+}
+.download-btn:hover { opacity:.9; }
+.download-btn.show { display:block; }
+
+.error-msg { color:#EF4444; font-size:13px; margin-top:8px; display:none; }
+.error-msg.show { display:block; }
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="header">
+    <h1>SlideAI 本地版</h1>
+    <p>输入主题，AI自动生成专业PPT</p>
+  </div>
+
+  <div class="card">
+    <h2>PPT设置</h2>
+
+    <div class="form-group">
+      <label>PPT主题</label>
+      <input type="text" id="topic" placeholder="例如：人工智能介绍、产品发布方案、年度工作总结...">
+    </div>
+
+    <div class="form-group">
+      <label>画布格式</label>
+      <select id="canvas">
+        <option value="ppt169">16:9 宽屏 (1280x720)</option>
+        <option value="ppt43">4:3 标准 (1024x768)</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label>设计风格</label>
+      <div class="style-grid">
+        <div class="style-btn active" data-style="tech" onclick="selectStyle(this)">
+          <div class="name">科技</div>
+          <div class="desc">暗色背景 + 霓虹色</div>
+        </div>
+        <div class="style-btn" data-style="general" onclick="selectStyle(this)">
+          <div class="name">通用</div>
+          <div class="desc">白色背景 + 蓝色系</div>
+        </div>
+        <div class="style-btn" data-style="consulting" onclick="selectStyle(this)">
+          <div class="name">商务</div>
+          <div class="desc">白色背景 + 深蓝系</div>
+        </div>
+        <div class="style-btn" data-style="academic" onclick="selectStyle(this)">
+          <div class="name">学术</div>
+          <div class="desc">白色背景 + 靛蓝系</div>
+        </div>
+      </div>
+    </div>
+
+    <button class="generate-btn" id="generateBtn" onclick="startGenerate()">生成PPT</button>
+    <div class="error-msg" id="errorMsg"></div>
+
+    <div class="progress-area" id="progressArea">
+      <div class="progress-bar-bg"><div class="progress-bar" id="progressBar"></div></div>
+      <div class="progress-text" id="progressText">准备中...</div>
+      <div class="logs" id="logs"></div>
+    </div>
+
+    <button class="download-btn" id="downloadBtn" onclick="downloadPptx()">下载 PPTX</button>
+  </div>
+</div>
+
+<script>
+let currentTaskId = null;
+
+function selectStyle(el) {
+  document.querySelectorAll('.style-btn').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+}
+
+function showError(msg) {
+  const e = document.getElementById('errorMsg');
+  e.textContent = msg;
+  e.classList.add('show');
+}
+
+function hideError() {
+  document.getElementById('errorMsg').classList.remove('show');
+}
+
+async function startGenerate() {
+  hideError();
+  const topic = document.getElementById('topic').value.trim();
+  if (!topic) { showError('请输入PPT主题'); return; }
+
+  const canvas = document.getElementById('canvas').value;
+  const styleBtn = document.querySelector('.style-btn.active');
+  const style = styleBtn ? styleBtn.dataset.style : 'tech';
+
+  document.getElementById('generateBtn').disabled = true;
+  document.getElementById('generateBtn').textContent = '生成中...';
+  document.getElementById('progressArea').classList.add('show');
+  document.getElementById('downloadBtn').classList.remove('show');
+  document.getElementById('logs').innerHTML = '';
+
+  try {
+    const resp = await fetch('/api/generate', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({topic, canvas, style, lang: 'zh'}),
+    });
+    const data = await resp.json();
+    if (data.error) { showError(data.error); resetBtn(); return; }
+    currentTaskId = data.task_id;
+    pollStatus();
+  } catch(e) {
+    showError('请求失败: ' + e.message);
+    resetBtn();
+  }
+}
+
+function pollStatus() {
+  if (!currentTaskId) return;
+  setTimeout(async () => {
+    try {
+      const resp = await fetch('/api/task/' + currentTaskId);
+      const data = await resp.json();
+
+      document.getElementById('progressBar').style.width = data.progress + '%';
+      document.getElementById('progressText').textContent = data.message;
+
+      const logsEl = document.getElementById('logs');
+      if (data.logs) {
+        data.logs.forEach(log => {
+          if (!logsEl.querySelector('[data-log="' + log + '"]')) {
+            const div = document.createElement('div');
+            div.className = 'log-item';
+            div.dataset.log = log;
+            div.textContent = '> ' + log;
+            logsEl.appendChild(div);
+          }
+        });
+        logsEl.scrollTop = logsEl.scrollHeight;
+      }
+
+      if (data.status === 'done') {
+        document.getElementById('progressText').textContent = '生成完成!';
+        document.getElementById('downloadBtn').classList.add('show');
+        resetBtn();
+        return;
+      }
+      if (data.status === 'error') {
+        showError(data.message);
+        resetBtn();
+        return;
+      }
+      pollStatus();
+    } catch(e) {
+      pollStatus();
+    }
+  }, 1000);
+}
+
+function resetBtn() {
+  document.getElementById('generateBtn').disabled = false;
+  document.getElementById('generateBtn').textContent = '生成PPT';
+}
+
+function downloadPptx() {
+  if (!currentTaskId) return;
+  window.location.href = '/api/download/' + currentTaskId;
+}
+</script>
+</body>
+</html>

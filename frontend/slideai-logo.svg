@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024">
+  <defs>
+    <linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0066FF;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#00BFFF;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  <!-- Browser window with gradient -->
+  <path d="M 150 200 Q 150 150 200 150 L 824 150 Q 874 150 874 200 L 874 750 Q 874 800 824 800 L 200 800 Q 150 800 150 750 Z" 
+        fill="url(#grad1)" stroke="none"/>
+  <!-- Window header -->
+  <rect x="150" y="150" width="724" height="100" fill="url(#grad1)"/>
+  <!-- Window dots -->
+  <circle cx="200" cy="200" r="20" fill="white" opacity="0.9"/>
+  <circle cx="270" cy="200" r="20" fill="white" opacity="0.9"/>
+  <!-- Content area -->
+  <rect x="180" y="280" width="664" height="490" rx="20" fill="white" opacity="0.95"/>
+  <!-- Letter A with gradient -->
+  <path d="M 400 400 L 550 700 L 480 700 L 460 650 L 340 650 L 320 700 L 250 700 L 400 400 Z M 380 590 L 420 590 L 400 540 Z" 
+        fill="url(#grad1)"/>
+  <!-- Cursor arrow -->
+  <path d="M 300 500 L 300 650 L 350 600 L 380 650 L 420 630 L 390 580 L 450 580 Z" 
+        fill="url(#grad1)"/>
+  <!-- Orbit circle -->
+  <ellipse cx="512" cy="450" rx="450" ry="380" 
+           fill="none" stroke="url(#grad1)" stroke-width="30" opacity="0.6"
+           transform="rotate(-15 512 450)"/>
+  <!-- Orbit dot -->
+  <circle cx="950" cy="420" r="35" fill="url(#grad1)"/>
+</svg>

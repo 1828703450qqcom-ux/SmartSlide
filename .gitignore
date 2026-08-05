@@ -1,0 +1,36 @@
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Python runtime (do NOT commit embedded Python)
+python/
+
+# Generated files
+projects/
+uploads/
+__pycache__/
+*.pyc
+*.pyo
+
+# Database
+backend/instance/
+*.db
+*.db-shm
+*.db-wal
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Frontend build
+frontend/node_modules/
+
+# User-specific project data
+基于*
