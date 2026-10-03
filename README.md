@@ -1,4 +1,8 @@
-# SlideAI 本地版 - AI PPT 生成工具
+# SmartSlide - AI PPT 生成工具
+
+![SmartSlide：多模型智能幻灯片生成](docs/assets/overview.png)
+
+[详细部署指南](docs/部署指南.md) · [Web 依赖](requirements-web.txt)
 
 > 基于多厂商大模型的智能 PPT 自动生成工具，支持 Web 界面和命令行两种模式。
 
@@ -15,18 +19,21 @@
 - **多语言输出**：中文 / 英文 / 日文
 - **多种设计风格**：科技 / 商务 / 学术 / 创意
 - **图片生成**：可选 AI 配图（豆包 Seedream）
-- **Docker 部署**：一键启动
+- **Docker 部署**：新增 Compose 配置，可启动轻量 Web 入口 `web_app.py`
 
 ---
 
 ## 项目结构
 
 ```
-PPT生成本地版/
+SmartSlide/
 ├── web_app.py              # Web 服务主程序
 ├── 生成PPT.py              # 命令行生成工具
 ├── .env                    # API 密钥配置（不提交）
 ├── .env.example            # 配置模板
+├── requirements-web.txt    # 轻量 Web 入口依赖
+├── Dockerfile.web          # 轻量 Web 镜像
+├── docker-compose.yml      # 轻量 Web 服务
 ├── backend/                # 后端服务（Flask）
 │   ├── app.py              # Flask 应用
 │   ├── config.py           # 配置管理
@@ -51,7 +58,7 @@ PPT生成本地版/
 
 ```bash
 # 1. 安装依赖
-pip install openai python-pptx
+pip install -r requirements-web.txt
 
 # 2. 配置 API 密钥
 cp .env.example .env
@@ -65,7 +72,7 @@ python 生成PPT.py
 
 ```bash
 # 1. 安装依赖
-pip install flask flask-cors openai python-pptx
+pip install -r requirements-web.txt
 
 # 2. 配置 API 密钥
 cp .env.example .env
@@ -79,11 +86,15 @@ python web_app.py
 
 ### 方式三：Docker 部署
 
+先复制 `.env.example` 为 `.env` 并配置模型密钥，Compose 默认只在本机监听 5000 端口。完整的域名、HTTPS、备份及常见问题见[部署指南](docs/部署指南.md)。
+
 ```bash
-docker-compose up -d
+docker compose up -d --build
 ```
 
 ---
+
+> Windows `启动.bat` 依赖未随 Git 仓库提供的内嵌 Python。直接克隆仓库时，请使用上述虚拟环境或 Docker 启动。
 
 ## API 密钥配置
 

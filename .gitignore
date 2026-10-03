@@ -34,3 +34,6 @@ frontend/node_modules/
 
 # User-specific project data
 基于*
+
+# Docker/web_app generated output
+output/

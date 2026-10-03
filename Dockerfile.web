@@ -1,0 +1,17 @@
+FROM python:3.11-slim
+
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1
+
+WORKDIR /app
+RUN apt-get update && apt-get install -y --no-install-recommends libcairo2 && rm -rf /var/lib/apt/lists/*
+COPY requirements-web.txt /app/requirements-web.txt
+RUN python -m pip install --no-cache-dir -r requirements-web.txt
+COPY . /app
+RUN mkdir -p /root/Desktop
+
+EXPOSE 5000
+HEALTHCHECK --interval=30s --timeout=5s --start-period=20s --retries=3 \
+    CMD python -c "import urllib.request; urllib.request.urlopen('http://127.0.0.1:5000/api/vendors', timeout=3)"
+CMD ["python", "web_app.py"]
+

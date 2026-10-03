@@ -1,0 +1,16 @@
+.git
+.env
+.env.*
+!.env.example
+.venv
+python/
+output/
+projects/
+uploads/
+backend/instance/
+__pycache__/
+*.pyc
+*.db
+*.db-shm
+*.db-wal
+
