@@ -58,7 +58,7 @@ docker compose up -d --build
 docker compose ps
 ```
 
-Windows PowerShell 将复制命令换成 `Copy-Item .env.example .env`。浏览器打开 **http://127.0.0.1:5000/**。Compose 只在本机监听该端口；生成文件保存在 `output/`。本机 Python 虚拟环境、HTTPS 代理、备份与排障见[详细部署指南](docs/部署指南.md)。
+Windows PowerShell 将复制命令换成 `Copy-Item .env.example .env`。浏览器打开 [本地页面](http://127.0.0.1:5000/)。Compose 只在本机监听该端口；生成文件保存在 `output/`。本机 Python 虚拟环境、HTTPS 代理、备份与排障见[详细部署指南](docs/部署指南.md)。
 
 ## 配置提示
 
